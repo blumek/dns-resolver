@@ -3,10 +3,13 @@ module bluemek.com/authoritative_nameserver
 go 1.22.1
 
 require (
+	github.com/gin-contrib/zap v1.1.1
 	github.com/gin-gonic/gin v1.9.1
 	github.com/goccy/go-json v0.10.2
 	github.com/redis/go-redis/v9 v9.5.1
 	github.com/spf13/viper v1.18.2
+	go.uber.org/fx v1.21.0
+	go.uber.org/zap v1.27.0
 )
 
 require (
@@ -41,8 +44,8 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
-	go.uber.org/atomic v1.9.0 // indirect
-	go.uber.org/multierr v1.9.0 // indirect
+	go.uber.org/dig v1.17.1 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.7.0 // indirect
 	golang.org/x/crypto v0.21.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect

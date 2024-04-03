@@ -16,21 +16,21 @@ type configuration struct {
 	redisPassword string `mapstructure:"REDIS_PASSWORD"`
 }
 
-func GetConfiguration() Configuration {
-	loadedConfiguration, _ := loadConfiguration()
+func NewConfiguration() Configuration {
+	//loadedConfiguration, _ := loadConfiguration()
 	return Configuration{
 		Redis: struct {
 			Host     string
 			Port     uint16
 			Password string
-		}{Host: loadedConfiguration.redisHost, Port: loadedConfiguration.redisPort, Password: loadedConfiguration.redisPassword},
+		}{Host: "localhost", Port: 6379, Password: ""},
 	}
 }
 
 func loadConfiguration() (configuration configuration, err error) {
 	viper.AddConfigPath(".")
 	viper.SetConfigName("configuration")
-	viper.SetConfigType("env")
+	viper.SetConfigType(".env")
 
 	viper.AutomaticEnv()
 

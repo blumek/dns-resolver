@@ -1,20 +1,19 @@
 package redis
 
 import (
+	. "bluemek.com/authoritative_nameserver/configuration"
 	"fmt"
 	"github.com/redis/go-redis/v9"
 )
 
-type ClientSettings struct {
-	IpAddress string
-	Port      uint16
-	Password  string
+func NewRedisClient(configuration Configuration) *redis.Client {
+	return redis.NewClient(toRedisOptions(configuration))
 }
 
-func NewRedisClient(settings ClientSettings) *redis.Client {
-	return redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%d", settings.IpAddress, settings.Port),
-		Password: settings.Password,
+func toRedisOptions(configuration Configuration) *redis.Options {
+	return &redis.Options{
+		Addr:     fmt.Sprintf("%s:%d", configuration.Redis.Host, configuration.Redis.Port),
+		Password: configuration.Redis.Password,
 		DB:       0,
-	})
+	}
 }
