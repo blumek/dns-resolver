@@ -14,22 +14,38 @@ import (
 
 func main() {
 	fx.New(
-		fx.Provide(NewHTTPServer),
-		fx.Provide(NewGinEngine),
-		fx.Provide(NewGetDNSRecordsUseCase),
-		fx.Provide(NewRedisDNSRecordsRepository),
-		fx.Provide(NewRedisClient),
-		fx.Provide(NewConfiguration),
-		fx.Provide(zap.NewProduction()),
 		fx.WithLogger(zapLogger()),
-		fx.Invoke(startHttpServer()),
-		fx.Invoke(bootstrapRedis()),
+		fx.Provide(
+			NewHTTPServer,
+			fx.Annotate(
+				NewGinEngine,
+				fx.ParamTags(`group:"routes"`),
+			),
+			AsRoute(NewGetDNSRecordsRoute),
+			NewGetDNSRecordsUseCase,
+			NewRedisDNSRecordsRepository,
+			NewRedisClient,
+			NewConfiguration,
+			zap.NewProduction,
+		),
+		fx.Invoke(
+			startHttpServer(),
+			bootstrapRedis(),
+		),
 	).Run()
 }
 
-func zapLogger() func(log *zap.Logger) fxevent.Logger {
-	return func(log *zap.Logger) fxevent.Logger {
-		return &fxevent.ZapLogger{Logger: log}
+func AsRoute(component any) any {
+	return fx.Annotate(
+		component,
+		fx.As(new(Route)),
+		fx.ResultTags(`group:"routes"`),
+	)
+}
+
+func zapLogger() func(logger *zap.Logger) fxevent.Logger {
+	return func(logger *zap.Logger) fxevent.Logger {
+		return &fxevent.ZapLogger{Logger: logger}
 	}
 }
 

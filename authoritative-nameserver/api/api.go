@@ -1,7 +1,6 @@
 package api
 
 import (
-	usecase "bluemek.com/authoritative_nameserver/use-case"
 	"context"
 	"errors"
 	ginzap "github.com/gin-contrib/zap"
@@ -45,19 +44,14 @@ func handleOnStop(server *http.Server, logger *zap.Logger) func(ctx context.Cont
 	}
 }
 
-func NewGinEngine(getDNSRecordsUseCase *usecase.GetDNSRecordsUseCase, logger *zap.Logger) *gin.Engine {
+func NewGinEngine(routes []Route, logger *zap.Logger) *gin.Engine {
 	router := gin.New()
 
 	router.Use(ginzap.Ginzap(logger, time.RFC3339, true))
 	router.Use(ginzap.RecoveryWithZap(logger, true))
 
-	router.GET("/records/:domain-name", handleGetDNSRecordsForDomain(getDNSRecordsUseCase))
-	return router
-}
-
-func handleGetDNSRecordsForDomain(getDNSRecordsUseCase *usecase.GetDNSRecordsUseCase) func(context *gin.Context) {
-	return func(context *gin.Context) {
-		dnsName := context.Param("domain-name")
-		context.JSON(200, getDNSRecordsUseCase.GetDNSRecordsForDomain(dnsName))
+	for _, route := range routes {
+		router.Handle(route.HttpMethod(), route.Pattern(), route.Handler())
 	}
+	return router
 }

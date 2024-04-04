@@ -37,3 +37,19 @@ func parseDNSRecordsJson(dnsRecordsJson string) DNSRecords {
 	}
 	return dnsRecords
 }
+
+func Bootstrap(client *redis.Client) {
+	dnsRecords := []dnsrecord.DNSRecord{
+		{
+			DomainName: "google.com",
+			Type_:      dnsrecord.A,
+			Value:      "192.0.2.1",
+			TimeToLive: 14400,
+		},
+	}
+
+	err := client.Set(context.Background(), "google.com", DNSRecords{DNSRecords: dnsRecords}, 0).Err()
+	if err != nil {
+		panic(err)
+	}
+}
