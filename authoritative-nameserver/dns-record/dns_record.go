@@ -1,6 +1,9 @@
 package dns_record
 
-import "github.com/goccy/go-json"
+import (
+	"github.com/goccy/go-json"
+	"time"
+)
 
 const (
 	A     = "A"
@@ -12,7 +15,7 @@ type DNSRecord struct {
 	DomainName string
 	Type_      string
 	Value      string
-	TimeToLive int64
+	TimeToLive time.Duration
 }
 
 func (dnsRecord DNSRecord) MarshalBinary() ([]byte, error) {

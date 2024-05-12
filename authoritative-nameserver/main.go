@@ -3,9 +3,9 @@ package main
 import (
 	. "bluemek.com/authoritative_nameserver/api"
 	. "bluemek.com/authoritative_nameserver/configuration"
+	"bluemek.com/authoritative_nameserver/repository"
 	. "bluemek.com/authoritative_nameserver/repository/redis"
 	. "bluemek.com/authoritative_nameserver/use-case"
-	"github.com/redis/go-redis/v9"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
 	"go.uber.org/zap"
@@ -17,10 +17,7 @@ func main() {
 		fx.WithLogger(zapLogger()),
 		fx.Provide(
 			NewHTTPServer,
-			fx.Annotate(
-				NewGinEngine,
-				fx.ParamTags(`group:"routes"`),
-			),
+			UseRoutes(NewGinEngine),
 			AsRoute(NewGetDNSRecordsRoute),
 			NewGetDNSRecordsUseCase,
 			NewRedisDNSRecordsRepository,
@@ -33,6 +30,13 @@ func main() {
 			bootstrapRedis(),
 		),
 	).Run()
+}
+
+func UseRoutes(component any) any {
+	return fx.Annotate(
+		component,
+		fx.ParamTags(`group:"routes"`),
+	)
 }
 
 func AsRoute(component any) any {
@@ -49,9 +53,9 @@ func zapLogger() func(logger *zap.Logger) fxevent.Logger {
 	}
 }
 
-func bootstrapRedis() func(client *redis.Client) {
-	return func(client *redis.Client) {
-		Bootstrap(client)
+func bootstrapRedis() func(dnsRecordsRepository repository.DNSRecordsRepository) {
+	return func(dnsRecordsRepository repository.DNSRecordsRepository) {
+		Bootstrap(dnsRecordsRepository)
 	}
 }
 
