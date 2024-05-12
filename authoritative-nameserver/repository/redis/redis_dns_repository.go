@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
+	"time"
 )
 
 type DNSRecordsRepository struct {
@@ -109,7 +110,7 @@ func Bootstrap(dnsRecordsRepository repository.DNSRecordsRepository) {
 		DomainName: "google.com",
 		Type_:      dnsrecord.A,
 		Value:      "192.0.2.1",
-		TimeToLive: 14400,
+		TimeToLive: 12 * time.Hour,
 	}
 
 	err := dnsRecordsRepository.Save(dnsRecord)
